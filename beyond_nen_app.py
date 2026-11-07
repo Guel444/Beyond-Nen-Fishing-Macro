@@ -12,6 +12,7 @@ F6 iniciar/pausar | F7 parar | F8 mostrar/ocultar preview | slot da vara configu
 """
 
 import time
+import logging
 import threading
 import queue
 import tkinter as tk
@@ -31,12 +32,21 @@ PREVIEW_FPS = 10
 SCAN_INTERVAL = 0.035
 LOST_SECONDS = 2.0
 BITE_TIMEOUT = 50
-MAX_RECOVERIES = 3
+MAX_RECOVERIES = 3  # Mantido apenas como referência histórica; não limita mais as tentativas.
 RECOVERY_UNEQUIP_DELAY = 0.45
 RECOVERY_EQUIP_DELAY = 0.85
 CAST_DELAY = 0.35
 AFTER_CATCH = 1.0
 DEADBAND = 3
+
+logging.basicConfig(
+    filename="beyond_nen_fishing.log",
+    filemode="a",
+    encoding="utf-8",
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+)
+LOGGER = logging.getLogger("BeyondNenFishing")
 
 # Região inicial do minigame em porcentagem da tela.
 # Ajustável na própria interface.
@@ -198,6 +208,7 @@ class FishingApp:
         self.lock = threading.Lock()
         self.photo = None
         self.worker = threading.Thread(target=self.capture_and_farm_loop, daemon=True)
+        LOGGER.info("Aplicativo iniciado. Slot da vara: %s", self.slot_key)
         self.worker.start()
 
         self.build_ui()
@@ -283,6 +294,7 @@ class FishingApp:
 
     def recover_fishing(self, reason):
         """Solta o mouse, alterna o slot da vara e prepara um novo lançamento."""
+        LOGGER.warning("Iniciando recuperação da pesca: %s", reason)
         self.release()
         self.status = f"Recuperação automática: {reason} — desequipando a vara (slot {self.slot_key})…"
         pyautogui.press(self.slot_key)
@@ -290,6 +302,7 @@ class FishingApp:
         pyautogui.press(self.slot_key)
         self.status = f"Recuperação automática: vara reequipada no slot {self.slot_key}; preparando novo lançamento…"
         time.sleep(RECOVERY_EQUIP_DELAY)
+        LOGGER.info("Recuperação da vara concluída.")
 
     def start_area_selection(self):
         if self.running:
@@ -393,6 +406,7 @@ class FishingApp:
 
     def toggle(self):
         self.running = not self.running
+        LOGGER.info("F6: farm %s pelo usuário.", "iniciada" if self.running else "pausada")
         if not self.running:
             self.release()
             self.status = "Farm pausada."
@@ -400,6 +414,7 @@ class FishingApp:
             self.status = "Farm ativa — clique no Roblox para deixá-lo em primeiro plano."
 
     def stop(self):
+        LOGGER.info("F7: parada solicitada pelo usuário.")
         self.running = False
         self.release()
         self.status = "Parada. Botão esquerdo solto."
@@ -537,43 +552,42 @@ class FishingApp:
                         elif not in_game and cast_time and now-cast_time > BITE_TIMEOUT:
                             cast_time = 0
                             recovery_count += 1
-                            if recovery_count > MAX_RECOVERIES:
-                                self.release()
-                                self.running = False
-                                self.status = (
-                                    f"Não consegui recuperar a pesca após {MAX_RECOVERIES} tentativas. "
-                                    "Confira o slot da vara e a área do minigame; F6 para tentar novamente."
-                                )
-                            else:
-                                self.recover_fishing("minigame não apareceu no tempo limite")
-                                in_game = False
-                                candidate_frames = 0
-                                previous_target_center = None
-                                previous_target_time = None
-                                next_cast_at = time.monotonic() + CAST_DELAY
-                                self.status = f"Recuperação {recovery_count}/{MAX_RECOVERIES} concluída — reiniciando a pesca…"
-
-                    time.sleep(SCAN_INTERVAL)
-                except Exception as exc:
-                    self.release()
-                    consecutive_errors += 1
-                    if consecutive_errors > MAX_RECOVERIES:
-                        self.running = False
-                        self.status = f"Erro persistente após {MAX_RECOVERIES} recuperações: {exc}"
-                    else:
-                        try:
-                            self.recover_fishing(f"falha inesperada ({exc})")
-                            cast_time = 0
+                            self.recover_fishing(
+                                f"minigame não apareceu no tempo limite (tentativa {recovery_count})"
+                            )
                             in_game = False
                             candidate_frames = 0
                             previous_target_center = None
                             previous_target_time = None
                             next_cast_at = time.monotonic() + CAST_DELAY
-                            self.status = f"Falha recuperada ({consecutive_errors}/{MAX_RECOVERIES}) — retomando…"
-                        except Exception as recovery_exc:
-                            self.running = False
-                            self.status = f"Falha na recuperação: {recovery_exc}"
-                    time.sleep(0.2)
+                            self.status = f"Recuperação {recovery_count} concluída — reiniciando a pesca…"
+
+                    time.sleep(SCAN_INTERVAL)
+                except Exception as exc:
+                    self.release()
+                    consecutive_errors += 1
+                    LOGGER.exception(
+                        "Erro durante a pesca (sequência de erros: %s). A farm continuará tentando se recuperar.",
+                        consecutive_errors,
+                    )
+                    self.status = f"Erro detectado ({consecutive_errors}); tentando recuperar automaticamente: {exc}"
+                    try:
+                        self.recover_fishing(f"falha inesperada ({exc})")
+                        cast_time = 0
+                        in_game = False
+                        candidate_frames = 0
+                        recovery_count = 0
+                        previous_target_center = None
+                        previous_target_time = None
+                        next_cast_at = time.monotonic() + CAST_DELAY
+                        self.status = f"Falha recuperada ({consecutive_errors}) — retomando…"
+                    except Exception as recovery_exc:
+                        LOGGER.exception("A tentativa de recuperação também falhou: %s", recovery_exc)
+                        self.status = f"Recuperação falhou; nova tentativa automática em instantes: {recovery_exc}"
+                        # Espera progressiva evita um loop agressivo se um recurso estiver indisponível.
+                        time.sleep(min(10.0, 0.5 * (2 ** min(consecutive_errors, 4))))
+                    else:
+                        time.sleep(0.2)
 
     def tick(self):
         while True:
