@@ -552,44 +552,46 @@ class FishingApp:
                         elif not in_game and cast_time and now-cast_time > BITE_TIMEOUT:
                             cast_time = 0
                             recovery_count += 1
-                            if recovery_count > MAX_RECOVERIES:
-                                self.release()
-                                self.running = False
-                                LOGGER.error(
-                                    "Farm pausada: minigame não apareceu após %s tentativas de recuperação.",
-                                    MAX_RECOVERIES,
-                                )
-                                self.status = (
-                                    f"Farm pausada por segurança após {MAX_RECOVERIES} tentativas sem minigame. "
-                                    "Confira a vara e a área; F6 para tentar novamente."
-                                )
-                            else:
-                                self.recover_fishing(
-                                    f"minigame não apareceu no tempo limite (tentativa {recovery_count})"
-                                )
-                                in_game = False
-                                candidate_frames = 0
-                                previous_target_center = None
-                                previous_target_time = None
-                                next_cast_at = time.monotonic() + CAST_DELAY
-                                self.status = f"Recuperação {recovery_count}/{MAX_RECOVERIES} concluída — reiniciando a pesca…"
+                            self.recover_fishing(
+                                f"minigame não apareceu no tempo limite (tentativa {recovery_count})"
+                            )
+                            in_game = False
+                            candidate_frames = 0
+                            previous_target_center = None
+                            previous_target_time = None
+                            # Backoff progressivo: evita relançamentos rápidos se o jogo não responder.
+                            retry_delay = min(30.0, 2.0 ** min(recovery_count, 5))
+                            next_cast_at = time.monotonic() + retry_delay
+                            LOGGER.warning(
+                                "Nova tentativa de lançamento agendada em %.1f segundos.",
+                                retry_delay,
+                            )
+                            self.status = (
+                                f"Recuperação {recovery_count} concluída — nova tentativa em "
+                                f"{retry_delay:.0f}s…"
+                            )
 
                     time.sleep(SCAN_INTERVAL)
                 except Exception as exc:
-                    # Falha inesperada: nunca relança automaticamente a vara.
-                    # Pausa com segurança para impedir uma sequência de cliques.
+                    # Erro temporário: solta o mouse, não alterna o slot nem clica.
+                    # Agenda uma nova tentativa com espera progressiva para evitar spam.
                     self.release()
-                    self.running = False
-                    LOGGER.exception("Farm pausada por erro inesperado: %s", exc)
-                    self.status = (
-                        f"Farm pausada por segurança devido a um erro: {exc}. "
-                        "Confira o arquivo beyond_nen_fishing.log antes de reiniciar (F6)."
+                    consecutive_errors += 1
+                    LOGGER.exception(
+                        "Erro durante a pesca (sequência: %s); agendando retomada segura.",
+                        consecutive_errors,
                     )
                     cast_time = 0
                     in_game = False
                     candidate_frames = 0
                     previous_target_center = None
                     previous_target_time = None
+                    retry_delay = min(60.0, 2.0 ** min(consecutive_errors, 6))
+                    next_cast_at = time.monotonic() + retry_delay
+                    self.status = (
+                        f"Erro temporário ({consecutive_errors}). Mouse solto; "
+                        f"tentando novamente em {retry_delay:.0f}s: {exc}"
+                    )
                     time.sleep(0.2)
 
     def tick(self):
