@@ -573,25 +573,36 @@ class FishingApp:
 
                     time.sleep(SCAN_INTERVAL)
                 except Exception as exc:
-                    # Erro temporário: solta o mouse, não alterna o slot nem clica.
-                    # Agenda uma nova tentativa com espera progressiva para evitar spam.
+                    # Erro temporário: solta o mouse, guarda e ree equipa a vara
+                    # pelo slot configurado, sem gerar cliques de lançamento.
                     self.release()
                     consecutive_errors += 1
                     LOGGER.exception(
-                        "Erro durante a pesca (sequência: %s); agendando retomada segura.",
+                        "Erro durante a pesca (sequência: %s); iniciando recuperação da vara.",
                         consecutive_errors,
                     )
                     cast_time = 0
                     in_game = False
                     candidate_frames = 0
+                    recovery_count = 0
                     previous_target_center = None
                     previous_target_time = None
-                    retry_delay = min(60.0, 2.0 ** min(consecutive_errors, 6))
-                    next_cast_at = time.monotonic() + retry_delay
-                    self.status = (
-                        f"Erro temporário ({consecutive_errors}). Mouse solto; "
-                        f"tentando novamente em {retry_delay:.0f}s: {exc}"
-                    )
+                    try:
+                        self.recover_fishing(f"erro temporário ({exc})")
+                        retry_delay = min(60.0, 2.0 ** min(consecutive_errors, 6))
+                        next_cast_at = time.monotonic() + retry_delay
+                        self.status = (
+                            f"Vara guardada e reequipada no slot {self.slot_key}. "
+                            f"Retomando em {retry_delay:.0f}s…"
+                        )
+                    except Exception as recovery_exc:
+                        LOGGER.exception("Falha ao guardar/reequipar a vara: %s", recovery_exc)
+                        retry_delay = min(60.0, 2.0 ** min(consecutive_errors, 6))
+                        next_cast_at = time.monotonic() + retry_delay
+                        self.status = (
+                            f"Não consegui alternar o slot {self.slot_key}; "
+                            f"nova tentativa em {retry_delay:.0f}s: {recovery_exc}"
+                        )
                     time.sleep(0.2)
 
     def tick(self):
