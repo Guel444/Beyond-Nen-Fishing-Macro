@@ -1,0 +1,30 @@
+BEYOND NEN FISHING — WINDOWS
+================================
+
+PORTUGUÊS
+1. Extraia todo o conteúdo do ZIP para uma pasta.
+2. Dê dois cliques em BeyondNenFishing.exe.
+3. Abra o Beyond Nen no Roblox e deixe o Roblox em primeiro plano.
+4. Use F6 para iniciar/pausar, F7 para parar e F8 para mostrar/ocultar a prévia.
+
+Não é necessário instalar Python. Use Windows 10/11 de 64 bits.
+Se o Windows SmartScreen exibir um aviso de editor desconhecido, confira se
+o arquivo foi baixado da página oficial do projeto antes de decidir como
+prosseguir. Não desative o antivírus. Se houver bloqueio, verifique o arquivo
+com o Microsoft Defender e consulte o repositório para atualizações.
+
+ENGLISH
+1. Extract the entire ZIP archive to a folder.
+2. Double-click BeyondNenFishing.exe.
+3. Open Beyond Nen in Roblox and keep the Roblox window in the foreground.
+4. Press F6 to start/pause, F7 to stop, and F8 to show/hide the preview.
+
+Python installation is not required. Windows 10/11 64-bit is required.
+If Windows SmartScreen shows an unknown-publisher warning, verify that the
+file came from the project's official page before deciding how to proceed.
+Do not disable antivirus protection. If the file is blocked, scan it with
+Microsoft Defender and check the repository for updates.
+
+SOURCE CODE
+The Python source and developer instructions remain available in the GitHub
+repository: https://github.com/Guel444/Beyond-Nen-Fishing-Macro
