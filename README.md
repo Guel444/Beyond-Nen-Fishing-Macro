@@ -64,12 +64,15 @@ The same controls are available through the app buttons.
 
 You do **not** need to install Python to use the packaged version.
 
-1. Open the repository's **Actions** tab and select **Build Windows executable**.
-2. Open the latest successful run on the `main` branch.
-3. In **Artifacts**, download `Beyond-Nen-Fishing-Windows`.
-4. Extract the ZIP and double-click `BeyondNenFishing.exe`.
+1. Open the [latest release](https://github.com/Guel444/Beyond-Nen-Fishing-Macro/releases/latest).
+2. Under **Assets**, click `Beyond-Nen-Fishing-Windows.zip`.
+3. Wait for the ZIP to download, then extract it (right-click → **Extract All...**).
+4. Open the extracted folder and double-click `BeyondNenFishing.exe`.
+5. If Windows displays a SmartScreen warning, verify that the file came from this repository before choosing **More info → Run anyway**. Do not disable your antivirus.
 
-The workflow also publishes the standalone EXE as a separate artifact. Artifacts are temporary (kept for 14 days); this project does not yet publish a permanent GitHub Release. The first build runs automatically after changes to the app/build files, or can be started with **Run workflow**.
+That's it: Python and manual dependency installation are not required. The **Source code** ZIPs shown by GitHub are not the ready-to-run application; download the file named `Beyond-Nen-Fishing-Windows.zip` under **Assets**.
+
+For a visual walkthrough, open the release page and look directly below the release notes for the **Assets** section. The Windows ZIP is attached there.
 
 **Windows requirements:** Windows 10/11, 64-bit. Python is not required for the packaged app. Roblox must be open and in the foreground while fishing.
 
@@ -83,7 +86,7 @@ Run `Gerar_EXE.bat`. It installs PyInstaller and attempts to create `BeyondNenFi
 
 - Detection depends on the position and colors of the minigame elements. Adjust the detection area if needed.
 - Roblox must remain in the foreground for the macro to send fishing inputs.
-- This repository contains the source code and Windows scripts; it does not include a prebuilt executable.
+- The latest ready-to-run Windows build is available on the [Releases page](https://github.com/Guel444/Beyond-Nen-Fishing-Macro/releases/latest).
 - Python syntax has been checked. This does not count as a full in-game Roblox test.
 
 ---
@@ -146,12 +149,15 @@ Os mesmos comandos estão disponíveis pelos botões da interface.
 
 Você **não precisa instalar Python** para usar a versão empacotada.
 
-1. Abra a aba **Actions** do repositório e selecione **Build Windows executable**.
-2. Abra a execução mais recente que terminou com sucesso na branch `main`.
-3. Em **Artifacts**, baixe `Beyond-Nen-Fishing-Windows`.
-4. Extraia o ZIP e dê dois cliques em `BeyondNenFishing.exe`.
+1. Acesse a [página da versão mais recente](https://github.com/Guel444/Beyond-Nen-Fishing-Macro/releases/latest).
+2. Na seção **Assets**, clique em `Beyond-Nen-Fishing-Windows.zip`.
+3. Aguarde o download e extraia o ZIP (clique com o botão direito → **Extrair tudo...**).
+4. Abra a pasta extraída e dê dois cliques em `BeyondNenFishing.exe`.
+5. Se o Windows mostrar o aviso do SmartScreen, confira se o arquivo foi baixado deste repositório. Só então escolha **Mais informações → Executar assim mesmo**. Não desative o antivírus.
 
-O workflow também disponibiliza o EXE separado como outro artefato. Os artefatos são temporários (ficam disponíveis por 14 dias); o projeto ainda não publica uma GitHub Release permanente. A primeira compilação roda automaticamente após alterações nos arquivos do aplicativo/build, ou pode ser iniciada em **Run workflow**.
+Pronto: não é necessário instalar Python nem configurar dependências. Atenção: os arquivos chamados **Source code** são apenas o código-fonte; para jogar, baixe especificamente `Beyond-Nen-Fishing-Windows.zip) na seção **Assets**.
+
+O ZIP do Windows fica logo abaixo das notas da versão, dentro da seção **Assets** da página de Releases.
 
 **Requisitos:** Windows 10/11 de 64 bits. Não é necessário instalar Python para usar o aplicativo empacotado. O Roblox precisa estar aberto e em primeiro plano durante a pesca.
 
@@ -165,5 +171,5 @@ Execute `Gerar_EXE.bat`. O script instala o PyInstaller e tenta gerar o arquivo 
 
 - A detecção depende da posição e das cores dos elementos do minigame. Se necessário, ajuste a área analisada.
 - O Roblox precisa estar em primeiro plano para que os comandos de pesca sejam enviados.
-- Este repositório contém o código-fonte e scripts de execução; não inclui um executável pronto.
+- A versão pronta para Windows fica disponível na [página de Releases](https://github.com/Guel444/Beyond-Nen-Fishing-Macro/releases/latest).
 - A sintaxe do Python foi verificada. Isso não equivale a um teste completo dentro do Roblox.
