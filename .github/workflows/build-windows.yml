@@ -3,6 +3,7 @@ name: Build Windows executable
 on:
   push:
     branches: [main]
+    tags: ["v*"]
     paths:
       - "beyond_nen_app.py"
       - "requirements.txt"
@@ -11,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -55,6 +56,14 @@ jobs:
           path: dist/Beyond-Nen-Fishing-Windows.zip
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Beyond Nen Fishing ${{ github.ref_name }}
+          generate_release_notes: true
+          files: dist/Beyond-Nen-Fishing-Windows.zip
 
       - name: Upload standalone executable
         uses: actions/upload-artifact@v4
