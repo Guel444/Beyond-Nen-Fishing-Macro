@@ -60,6 +60,21 @@ The same controls are available through the app buttons.
 - **Select minigame area:** Pause the macro, then drag a rectangle around the fishing minigame bar to define the detection area.
 - **Restore default area:** Reset the detection area to the app's default region.
 
+### Download the ready-to-run Windows version
+
+You do **not** need to install Python to use the packaged version.
+
+1. Open the repository's **Actions** tab and select **Build Windows executable**.
+2. Open the latest successful run on the `main` branch.
+3. In **Artifacts**, download `Beyond-Nen-Fishing-Windows`.
+4. Extract the ZIP and double-click `BeyondNenFishing.exe`.
+
+The workflow also publishes the standalone EXE as a separate artifact. Artifacts are temporary (kept for 14 days); this project does not yet publish a permanent GitHub Release. The first build runs automatically after changes to the app/build files, or can be started with **Run workflow**.
+
+**Windows requirements:** Windows 10/11, 64-bit. Python is not required for the packaged app. Roblox must be open and in the foreground while fishing.
+
+**Security warning:** PyInstaller executables that are not code-signed can trigger SmartScreen or antivirus false positives. Do not disable antivirus. Verify that you downloaded the ZIP from this repository and scan it with Microsoft Defender if Windows flags it.
+
 ### Build an executable
 
 Run `Gerar_EXE.bat`. It installs PyInstaller and attempts to create `BeyondNenFishing.exe` in the `dist` folder.
@@ -126,6 +141,21 @@ Os mesmos comandos estão disponíveis pelos botões da interface.
 - **Slot da vara:** escolha o número da tecla (1 a 9) correspondente ao slot em que a vara está equipada. Esse slot é usado também nas tentativas de recuperação automática.
 - **Selecionar área na tela:** com a automação pausada, arraste um retângulo ao redor da barra do minigame para definir a região analisada.
 - **Restaurar área padrão:** retorna à região inicial configurada no aplicativo.
+
+### Baixar a versão pronta para Windows
+
+Você **não precisa instalar Python** para usar a versão empacotada.
+
+1. Abra a aba **Actions** do repositório e selecione **Build Windows executable**.
+2. Abra a execução mais recente que terminou com sucesso na branch `main`.
+3. Em **Artifacts**, baixe `Beyond-Nen-Fishing-Windows`.
+4. Extraia o ZIP e dê dois cliques em `BeyondNenFishing.exe`.
+
+O workflow também disponibiliza o EXE separado como outro artefato. Os artefatos são temporários (ficam disponíveis por 14 dias); o projeto ainda não publica uma GitHub Release permanente. A primeira compilação roda automaticamente após alterações nos arquivos do aplicativo/build, ou pode ser iniciada em **Run workflow**.
+
+**Requisitos:** Windows 10/11 de 64 bits. Não é necessário instalar Python para usar o aplicativo empacotado. O Roblox precisa estar aberto e em primeiro plano durante a pesca.
+
+**Aviso de segurança:** executáveis PyInstaller sem assinatura digital podem gerar alertas do SmartScreen ou antivírus, inclusive falsos positivos. Não desative o antivírus. Confira se o ZIP veio deste repositório e faça uma verificação com o Microsoft Defender caso o Windows sinalize o arquivo.
 
 ### Gerar um executável
 
