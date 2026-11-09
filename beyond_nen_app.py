@@ -206,6 +206,7 @@ class FishingApp:
         self.latest_frame = None
         self.latest_info = "Aguardando captura…"
         self.lock = threading.Lock()
+        self.input_lock = threading.Lock()
         self.photo = None
         self.worker = threading.Thread(target=self.capture_and_farm_loop, daemon=True)
         LOGGER.info("Aplicativo iniciado. Slot da vara: %s", self.slot_key)
@@ -213,7 +214,7 @@ class FishingApp:
 
         self.build_ui()
         keyboard.add_hotkey("F6", lambda: self.events.put("toggle"))
-        keyboard.add_hotkey("F7", lambda: self.events.put("stop"))
+        keyboard.add_hotkey("F7", self.emergency_stop)
         keyboard.add_hotkey("F8", lambda: self.events.put("preview"))
         self.root.after(80, self.tick)
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -428,9 +429,22 @@ class FishingApp:
         self.area_var.set("Área padrão: X 8% • Y 68% • L 84% • A 22%")
         self.status = "Área padrão restaurada."
 
+    def hold(self):
+        with self.input_lock:
+            if not self.mouse_held:
+                mouse_down()
+                self.mouse_held = True
+
     def release(self):
-        mouse_up()
-        self.mouse_held = False
+        with self.input_lock:
+            mouse_up()
+            self.mouse_held = False
+
+    def emergency_stop(self):
+        """Interrompe a automação e solta o mouse diretamente no callback do F7."""
+        self.running = False
+        self.release()
+        self.status = "Parada de emergência (F7). Botão esquerdo solto."
 
     def toggle(self):
         self.running = not self.running
@@ -549,8 +563,7 @@ class FishingApp:
                                     state = "SEGURANDO / avançando"
                             else:
                                 if error > switch_margin:
-                                    mouse_down()
-                                    self.mouse_held = True
+                                    self.hold()
                                     state = "SEGURANDO / avançando"
                                 else:
                                     state = "SOLTO / voltando"
@@ -588,7 +601,7 @@ class FishingApp:
                             previous_target_center = None
                             previous_target_time = None
                             # Backoff progressivo: evita relançamentos rápidos se o jogo não responder.
-                            retry_delay = min(30.0, 2.0 ** min(recovery_count, 5))
+                            retry_delay = min(12.0, 2.0 ** min(recovery_count, 4))
                             next_cast_at = time.monotonic() + retry_delay
                             LOGGER.warning(
                                 "Nova tentativa de lançamento agendada em %.1f segundos.",
@@ -599,39 +612,26 @@ class FishingApp:
                                 f"{retry_delay:.0f}s…"
                             )
 
+                    consecutive_errors = 0
                     time.sleep(SCAN_INTERVAL)
                 except Exception as exc:
-                    # Erro temporário: solta o mouse, guarda e ree equipa a vara
-                    # pelo slot configurado, sem gerar cliques de lançamento.
+                    # Falhas isoladas de captura/processamento não devem alternar
+                    # o slot da vara nem apagar o estado da pescaria. Solta o mouse
+                    # por segurança e tenta novamente com uma pausa curta e gradual.
                     self.release()
                     consecutive_errors += 1
-                    LOGGER.exception(
-                        "Erro durante a pesca (sequência: %s); iniciando recuperação da vara.",
-                        consecutive_errors,
+                    retry_delay = min(5.0, 0.25 * (2 ** min(consecutive_errors - 1, 5)))
+                    if consecutive_errors == 1 or consecutive_errors % 10 == 0:
+                        LOGGER.exception(
+                            "Falha temporária no loop (sequência: %s). Nova tentativa em %.2fs.",
+                            consecutive_errors,
+                            retry_delay,
+                        )
+                    self.status = (
+                        f"Falha temporária ({consecutive_errors}): {exc}. "
+                        f"Tentando novamente em {retry_delay:.1f}s…"
                     )
-                    cast_time = 0
-                    in_game = False
-                    candidate_frames = 0
-                    recovery_count = 0
-                    previous_target_center = None
-                    previous_target_time = None
-                    try:
-                        self.recover_fishing(f"erro temporário ({exc})")
-                        retry_delay = min(60.0, 2.0 ** min(consecutive_errors, 6))
-                        next_cast_at = time.monotonic() + retry_delay
-                        self.status = (
-                            f"Vara guardada e reequipada no slot {self.slot_key}. "
-                            f"Retomando em {retry_delay:.0f}s…"
-                        )
-                    except Exception as recovery_exc:
-                        LOGGER.exception("Falha ao guardar/reequipar a vara: %s", recovery_exc)
-                        retry_delay = min(60.0, 2.0 ** min(consecutive_errors, 6))
-                        next_cast_at = time.monotonic() + retry_delay
-                        self.status = (
-                            f"Não consegui alternar o slot {self.slot_key}; "
-                            f"nova tentativa em {retry_delay:.0f}s: {recovery_exc}"
-                        )
-                    time.sleep(0.2)
+                    time.sleep(retry_delay)
 
     def tick(self):
         while True:
