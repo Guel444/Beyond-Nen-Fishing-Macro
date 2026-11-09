@@ -132,7 +132,7 @@ def detect_bar(frame, roi):
         if (
             9 <= w <= rw * 0.18
             and 7 <= h <= rh * 0.75
-            and 1.4 <= aspect <= 4.2
+            and 1.0 <= aspect <= 4.2
             and area >= 65
         ):
             targets.append((x, y, w, h, area))
