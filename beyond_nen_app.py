@@ -226,8 +226,36 @@ class FishingApp:
                         font=("Segoe UI", 10))
         style.configure("Small.TLabel", background="#171a21", foreground="#aeb6c5",
                         font=("Segoe UI", 9))
-        outer = tk.Frame(self.root, bg="#171a21", padx=16, pady=14)
-        outer.pack(fill="both", expand=True)
+        # Área principal rolável: todos os controles ficam acessíveis
+        # mesmo em telas menores, sem exigir que o usuário redimensione a janela.
+        page = tk.Frame(self.root, bg="#171a21")
+        page.pack(fill="both", expand=True)
+
+        canvas = tk.Canvas(page, bg="#171a21", highlightthickness=0)
+        scrollbar = ttk.Scrollbar(page, orient="vertical", command=canvas.yview)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        canvas.pack(side="left", fill="both", expand=True)
+
+        outer = tk.Frame(canvas, bg="#171a21", padx=16, pady=14)
+        canvas_window = canvas.create_window((0, 0), window=outer, anchor="nw")
+
+        def update_scroll_region(_event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        def fit_content_width(event):
+            canvas.itemconfigure(canvas_window, width=event.width)
+
+        outer.bind("<Configure>", update_scroll_region)
+        canvas.bind("<Configure>", fit_content_width)
+
+        # Scroll pela roda do mouse (Windows) e por eventos de roda Linux.
+        canvas.bind_all(
+            "<MouseWheel>",
+            lambda event: canvas.yview_scroll(int(-event.delta / 120), "units")
+        )
+        canvas.bind_all("<Button-4>", lambda _event: canvas.yview_scroll(-1, "units"))
+        canvas.bind_all("<Button-5>", lambda _event: canvas.yview_scroll(1, "units"))
         ttk.Label(outer, text="BEYOND NEN  /  PESCA AUTOMÁTICA",
                   font=("Segoe UI", 18, "bold")).pack(anchor="w")
         ttk.Label(outer, text="A prévia agora captura a tela continuamente, mesmo com a farm pausada.",
