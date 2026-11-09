@@ -1,30 +1,49 @@
-BEYOND NEN FISHING — WINDOWS
-================================
+BEYOND NEN FISHING MACRO — GUIA RÁPIDO
+========================================
 
-PORTUGUÊS
-1. Extraia todo o conteúdo do ZIP para uma pasta.
-2. Dê dois cliques em BeyondNenFishing.exe.
-3. Abra o Beyond Nen no Roblox e deixe o Roblox em primeiro plano.
-4. Use F6 para iniciar/pausar, F7 para parar e F8 para mostrar/ocultar a prévia.
+1. EXTRAIR
+   Extraia todo o conteúdo do arquivo ZIP para uma pasta.
+   Não execute o programa diretamente de dentro do ZIP.
 
-Não é necessário instalar Python. Use Windows 10/11 de 64 bits.
-Se o Windows SmartScreen exibir um aviso de editor desconhecido, confira se
-o arquivo foi baixado da página oficial do projeto antes de decidir como
-prosseguir. Não desative o antivírus. Se houver bloqueio, verifique o arquivo
-com o Microsoft Defender e consulte o repositório para atualizações.
+2. ABRIR
+   Dê dois cliques em BeyondNenFishing.exe.
+   Não é necessário instalar Python.
+
+3. PREPARAR O JOGO
+   Abra Beyond Nen no Roblox, equipe sua vara no slot configurado
+   no macro e mantenha a janela do Roblox em primeiro plano.
+
+4. CONTROLAR
+   F6 — iniciar ou pausar a pesca automática
+   F7 — parar a automação e soltar o botão do mouse
+   F8 — mostrar ou ocultar a prévia da tela
+
+5. AJUSTAR, SE NECESSÁRIO
+   Use as opções da janela do macro para selecionar a região do
+   minigame e escolher o slot da vara (1 a 9).
+
+REQUISITOS
+- Windows 10 ou Windows 11 (64 bits).
+- Python não é necessário para esta versão pronta.
+- Roblox deve permanecer em primeiro plano durante a automação.
+
+AVISO DO WINDOWS
+Executáveis sem assinatura digital podem exibir um aviso do SmartScreen.
+Antes de prosseguir, confirme que o ZIP foi baixado da página oficial.
+Não desative o antivírus. Se necessário, verifique o arquivo com o
+Microsoft Defender.
+
+DOWNLOAD E AJUDA
+Versões oficiais: https://github.com/Guel444/Beyond-Nen-Fishing-Macro/releases/latest
+Ajuda e problemas: https://github.com/Guel444/Beyond-Nen-Fishing-Macro/issues
 
 ENGLISH
-1. Extract the entire ZIP archive to a folder.
-2. Double-click BeyondNenFishing.exe.
-3. Open Beyond Nen in Roblox and keep the Roblox window in the foreground.
-4. Press F6 to start/pause, F7 to stop, and F8 to show/hide the preview.
+1. Extract the entire ZIP archive to a folder. Do not run the app from inside the ZIP.
+2. Double-click BeyondNenFishing.exe. Python is not required.
+3. Open Beyond Nen in Roblox, equip your rod in the configured slot, and keep Roblox in the foreground.
+4. F6 starts/pauses, F7 stops, and F8 shows/hides the live preview.
+5. Use the app settings to select the minigame area and rod slot (1–9), if needed.
 
-Python installation is not required. Windows 10/11 64-bit is required.
-If Windows SmartScreen shows an unknown-publisher warning, verify that the
-file came from the project's official page before deciding how to proceed.
-Do not disable antivirus protection. If the file is blocked, scan it with
-Microsoft Defender and check the repository for updates.
-
-SOURCE CODE
-The Python source and developer instructions remain available in the GitHub
-repository: https://github.com/Guel444/Beyond-Nen-Fishing-Macro
+Requirements: Windows 10/11 (64-bit). Roblox must stay in the foreground.
+Official downloads: https://github.com/Guel444/Beyond-Nen-Fishing-Macro/releases/latest
+Help: https://github.com/Guel444/Beyond-Nen-Fishing-Macro/issues
